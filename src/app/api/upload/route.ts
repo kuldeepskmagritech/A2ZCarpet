@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server';
-import { writeFile, mkdir } from 'fs/promises';
-import { join } from 'path';
+import { createClient } from '@supabase/supabase-js';
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 export async function POST(request: Request) {
   try {
@@ -18,18 +21,26 @@ export async function POST(request: Request) {
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
     const filename = uniqueSuffix + '-' + file.name.replace(/[^a-zA-Z0-9.-]/g, '');
 
-    const uploadDir = join(process.cwd(), 'public', 'uploads');
-    
-    try {
-      await mkdir(uploadDir, { recursive: true });
-    } catch (e) {
-      // Directory might already exist
+    const { data: uploadData, error } = await supabase
+      .storage
+      .from('product-images')
+      .upload(filename, buffer, {
+        contentType: file.type,
+        cacheControl: '3600',
+        upsert: false
+      });
+
+    if (error) {
+      console.error('Supabase upload error:', error);
+      return NextResponse.json({ success: false, error: 'Failed to upload to Supabase' }, { status: 500 });
     }
 
-    const path = join(uploadDir, filename);
-    await writeFile(path, buffer);
+    const { data: publicUrlData } = supabase
+      .storage
+      .from('product-images')
+      .getPublicUrl(filename);
 
-    return NextResponse.json({ success: true, url: `/uploads/${filename}` });
+    return NextResponse.json({ success: true, url: publicUrlData.publicUrl });
   } catch (error) {
     console.error('Error uploading file:', error);
     return NextResponse.json({ success: false, error: 'Failed to upload file' }, { status: 500 });
