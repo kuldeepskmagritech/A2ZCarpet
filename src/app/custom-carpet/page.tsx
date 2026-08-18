@@ -8,6 +8,7 @@ export default function CustomCarpetPage() {
   const [step, setStep] = useState(1)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [formData, setFormData] = useState({
+    name: '', email: '', phone: '',
     style: '', shape: '', dimensions: '', material: '', colors: '',
     quantity: '1', usageType: '', location: '', notes: '', image: null as File | null
   })
@@ -17,11 +18,24 @@ export default function CustomCarpetPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsSubmitting(true)
-    const res = await submitCustomQuote(formData)
+    const res = await submitCustomQuote({
+      name: formData.name,
+      email: formData.email,
+      phone: formData.phone,
+      style: formData.style,
+      shape: formData.shape,
+      dimensions: formData.dimensions,
+      material: formData.material,
+      colors: formData.colors,
+      quantity: formData.quantity,
+      usageType: formData.usageType,
+      location: formData.location,
+      notes: formData.notes
+    })
     setIsSubmitting(false)
 
     if (res.success) {
-      const text = encodeURIComponent(`Hi A2Z Carpet, I would like a custom quote.\n\nStyle: ${formData.style}\nShape: ${formData.shape}\nDimensions: ${formData.dimensions}\nColors: ${formData.colors}\nMaterial: ${formData.material}\nUsage: ${formData.usageType}\nQuantity: ${formData.quantity}\nLocation: ${formData.location}\nNotes: ${formData.notes}`)
+      const text = encodeURIComponent(`Hi A2Z Carpet, I would like a custom quote.\n\nName: ${formData.name}\nStyle: ${formData.style}\nShape: ${formData.shape}\nDimensions: ${formData.dimensions}\nColors: ${formData.colors}\nMaterial: ${formData.material}\nUsage: ${formData.usageType}\nQuantity: ${formData.quantity}\nLocation: ${formData.location}\nNotes: ${formData.notes}`)
       window.open(`https://wa.me/918558085579?text=${text}`, '_blank')
       setStep(4)
     } else {
@@ -231,18 +245,18 @@ export default function CustomCarpetPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-sm font-medium mb-2">Full Name</label>
-                <input type="text" required className="w-full p-3 border border-border rounded focus:border-primary focus:outline-none" />
+                <input type="text" required value={formData.name} onChange={(e) => updateForm('name', e.target.value)} className="w-full p-3 border border-border rounded focus:border-primary focus:outline-none" />
               </div>
               <div>
                 <label className="block text-sm font-medium mb-2">Email Address</label>
-                <input type="email" required className="w-full p-3 border border-border rounded focus:border-primary focus:outline-none" />
+                <input type="email" required value={formData.email} onChange={(e) => updateForm('email', e.target.value)} className="w-full p-3 border border-border rounded focus:border-primary focus:outline-none" />
               </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-sm font-medium mb-2">Phone Number / WhatsApp</label>
-                <input type="tel" required className="w-full p-3 border border-border rounded focus:border-primary focus:outline-none" />
+                <input type="tel" required value={formData.phone} onChange={(e) => updateForm('phone', e.target.value)} className="w-full p-3 border border-border rounded focus:border-primary focus:outline-none" />
               </div>
               <div>
                 <label className="block text-sm font-medium mb-2">Delivery Location (City, Country)</label>
