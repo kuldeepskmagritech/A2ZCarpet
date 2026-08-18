@@ -1,4 +1,5 @@
 import { db } from '@/lib/db'
+export const dynamic = 'force-dynamic'
 import { Package, MapPin, User, Heart, Truck, CheckCircle2 } from 'lucide-react'
 import Link from 'next/link'
 

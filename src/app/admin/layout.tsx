@@ -1,4 +1,5 @@
 import Link from 'next/link'
+export const dynamic = 'force-dynamic'
 import { LayoutDashboard, Package, Users, Settings, ShoppingCart, LogOut, Image as ImageIcon, MessageSquare, ClipboardList } from 'lucide-react'
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
